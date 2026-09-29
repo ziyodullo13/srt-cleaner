@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SubClean — SRT Subtitle Cleaner</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="glow-bg"></div>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header animate-fade-in">
+            <div class="logo">
+                <span class="logo-icon">✨</span>
+                <h1>Sub<span>Clean</span></h1>
+            </div>
+            <p class="subtitle">SRT subtitrlarni reklama, musiqa va ortiqcha shovqinlardan tozalash xizmati</p>
+        </header>
+
+        <!-- Main Content Grid -->
+        <div class="main-grid">
+            <!-- Left Panel: Controls & Upload -->
+            <div class="control-panel animate-slide-up">
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <h3>📂 Subtitr Yuklash</h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- Dropzone -->
+                        <div class="dropzone" id="dropzone">
+                            <input type="file" id="file-input" accept=".srt" class="file-input">
+                            <div class="dropzone-content">
+                                <div class="dropzone-icon">📥</div>
+                                <p class="dropzone-text">SRT faylini bu yerga tortib tashlang yoki</p>
+                                <button class="btn btn-primary" id="select-btn">Fayl tanlash</button>
+                            </div>
+                            <div class="file-info" id="file-info" style="display: none;">
+                                <div class="file-icon">📄</div>
+                                <span class="file-name" id="file-name-label">filename.srt</span>
+                                <button class="btn-close" id="clear-file-btn">✕</button>
+                            </div>
+                        </div>
+
+                        <!-- Settings -->
+                        <div class="settings-group">
+                            <div class="settings-header">
+                                <label for="song-gap">🎵 Musiqa bloklari oralig'i (Song Gap)</label>
+                                <span class="badge" id="gap-val">5.0 s</span>
+                            </div>
+                            <input type="range" id="song-gap" min="1.0" max="15.0" step="0.5" value="5.0" class="slider">
+                            <p class="settings-desc">Musiqa yoki shovqin belgilarining bir-biridan maksimal masofasi (soniyada). Agar masofa kichik bo'lsa, butun blok o'chiriladi.</p>
+                        </div>
+
+                        <!-- Clean Button -->
+                        <button class="btn btn-gradient btn-large btn-block" id="clean-btn" disabled>
+                            ⚡ Tozalash
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Statistics & Actions -->
+            <div class="stats-panel animate-slide-up" id="stats-panel" style="display: none;">
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <h3>📊 Tozalash Natijalari</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <span class="stat-label">Jami subtitr</span>
+                                <span class="stat-value text-blue" id="stat-total">0</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-label">Qoldi</span>
+                                <span class="stat-value text-green" id="stat-kept">0</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-label">O'chirildi</span>
+                                <span class="stat-value text-red" id="stat-removed">0</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-label">Tozalash foizi</span>
+                                <span class="stat-value text-purple" id="stat-pct">0%</span>
+                            </div>
+                        </div>
+
+                        <!-- Downloader Button -->
+                        <button class="btn btn-success btn-large btn-block" id="download-btn">
+                            ⬇️ Tozalangan SRT yuklab olish
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Section -->
+        <div class="preview-section animate-slide-up" id="preview-section" style="display: none;">
+            <div class="card glass-card">
+                <div class="card-header preview-header-tabs">
+                    <h3>🔍 Solishtirish ko'rinishi</h3>
+                    <div class="tabs">
+                        <button class="tab-btn active" data-tab="split">Side-by-Side</button>
+                        <button class="tab-btn" data-tab="original">Asl holati</button>
+                        <button class="tab-btn" data-tab="cleaned">Tozalangan holati</button>
+                    </div>
+                </div>
+                <div class="card-body no-padding">
+                    <!-- Tab Content: Split -->
+                    <div class="tab-pane active" id="tab-split">
+                        <div class="split-view">
+                            <div class="view-panel">
+                                <div class="panel-title">Asl subtitr</div>
+                                <div class="code-container">
+                                    <textarea id="original-textarea" readonly></textarea>
+                                </div>
+                            </div>
+                            <div class="view-panel">
+                                <div class="panel-title">Tozalangan subtitr</div>
+                                <div class="code-container">
+                                    <textarea id="cleaned-textarea" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab Content: Original -->
+                    <div class="tab-pane" id="tab-original">
+                        <div class="code-container full-width">
+                            <textarea id="original-textarea-full" readonly></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Tab Content: Cleaned -->
+                    <div class="tab-pane" id="tab-cleaned">
+                        <div class="code-container full-width">
+                            <textarea id="cleaned-textarea-full" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main JS Application -->
+    <script src="/static/app.js"></script>
+</body>
+</html>
